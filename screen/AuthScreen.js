@@ -23,7 +23,7 @@ const AuthScreen = (props) =>  {
             if (result.message === 'ok') {
                 await AsyncStorage.setItem('@auth', JSON.stringify(true))
                 await AsyncStorage.setItem('@token', JSON.stringify(result.token))
-                props.navigation.navigate('Profile')
+                props.navigation.push('Profile')
             } else await AsyncStorage.setItem('@auth', JSON.stringify(false))
         } catch (err) {
             console.error('Error:', err)
