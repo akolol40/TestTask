@@ -1,5 +1,5 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -8,15 +8,46 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~42.0.1",
-    "expo-status-bar": "~1.0.4",
+    "@babel/runtime": "7.0.0-beta.55",
+    "@react-native-async-storage/async-storage": "^1.15.5",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-picker/picker": "1.9.2",
+    "@react-navigation/native": "^5.7.3",
+    "@react-navigation/stack": "^5.9.0",
+    "expo": "~40.0.0",
+    "expo-app-auth": "~9.3.0",
+    "expo-auth-session": "~3.0.0",
+    "expo-file-system": "~9.3.0",
+    "expo-linear-gradient": "~8.4.0",
+    "expo-linking": "~2.0.1",
+    "expo-media-library": "^12.1.2",
+    "expo-print": "~9.2.0",
+    "expo-random": "~10.0.0",
+    "expo-sharing": "^9.2.1",
+    "expo-status-bar": "~1.0.3",
+    "md5": "^2.3.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
-    "react-native-web": "~0.13.12"
+    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
+    "react-native-draftjs-editor": "0.0.2",
+    "react-native-dropdown-picker": "^5.1.21",
+    "react-native-easy-router": "^3.1.1",
+    "react-native-expo-viewport-units": "0.0.8",
+    "react-native-gesture-handler": "^1.7.0",
+    "react-native-keyboard-spacer": "^0.4.1",
+    "react-native-picker-select": "^8.0.4",
+    "react-native-reanimated": "~1.13.0",
+    "react-native-safe-area-context": "3.1.9",
+    "react-native-screens": "^2.10.1",
+    "react-native-svg": "12.1.0",
+    "react-native-table-component": "^1.2.1",
+    "react-native-vkontakte-login": "^1.0.1",
+    "react-native-web": "~0.13.12",
+    "react-native-webview": "^11.6.5",
+    "react-navigation": "^4.4.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0"
+    "@babel/core": "~7.9.0"
   },
   "private": true
 }
