@@ -80,18 +80,15 @@ exports.addTableData = async(req, res) => {
         } catch (e) {
             return res.status(401).send('unauthorized');
         }
-        await House.findOne({addr: addr}).then(async (row) => {
-            if (row) {
-                res.status(404).json({status:"error" , message: 'Адрес уже существует'})
-            } else {
+        
                 const newAddr = new House({
                     addr: addr,
                     userId: decoded.sub
                 })
                 await newAddr.save()
                 res.status(200).json({status:'ok'})
-            }
-        })
+         
+
     }
     return res.send(500);
 
