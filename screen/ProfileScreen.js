@@ -169,7 +169,7 @@ export default function ProfileScreen (props) {
           const object = {
             id: result.id,
             name: '0',
-            v: 'null'
+            userId: id
           }
           setbtncap('Ок')
           mass.push(Object.values(object))
