@@ -9,7 +9,8 @@ export default function ProfileScreen (props) {
     const [tableData, setTableData] = useState([
       ['a','b',''],['c','g','']
       ])
-      const [isSelected, setSelection] = useState(false);  
+    const [isSelected, setSelection] = useState(false);  
+    const [id, setId] = useState(0)
     useEffect(async() => {
       try {
         const Store = await Storage()  
@@ -21,8 +22,9 @@ export default function ProfileScreen (props) {
             }
         })
         let response = await request.json()
+        setId(response.id)
         setName(response.fio)
-        request = await fetch(uri+'getlist',
+        request = await fetch(uri+'getAllList',
         {
             headers:{
                 'authorization': 'bearer ' + JSON.parse(Store.token)
@@ -134,7 +136,7 @@ export default function ProfileScreen (props) {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => deleteElement(tableData[index][0],index)}>
           <View style={styles.btn}>
-            <Text style={styles.btnText}>удалить</Text>
+            <Text style={styles.btnText}>Удалить</Text>
           </View>
         </TouchableOpacity>
     </View>
@@ -169,8 +171,10 @@ export default function ProfileScreen (props) {
             name: '0',
             v: 'null'
           }
+          setbtncap('Ок')
           mass.push(Object.values(object))
-          setTableData(mass)
+          setTableData(mass)         
+
       } catch (err) {
           console.error('Error:', err)
       }
@@ -213,7 +217,7 @@ export default function ProfileScreen (props) {
             {tableData.map((rowData, index) => 
             <TableWrapper style={{flexDirection: 'row'}} key={index}> 
                {rowData.map((data, idx) => 
-                  <Cell key={idx} data={idx === 2 ? element(data, index) : idx === 1 ? edit(data, index): data} textStyle={[styles.text]}/>
+                  <Cell key={idx} data={idx === 2 && data===id ? element(data, index) : idx === 2 && data!==id ? 'Адрес добавили не вы' : idx === 1 ? edit(data, index): data} textStyle={[styles.text]}/>
 
               )}
             </TableWrapper>)}

@@ -7,7 +7,7 @@ export default function HomeScreen (props) {
         let auth = await AsyncStorage.getItem('@auth')
         console.log(auth)
         if (auth==='true') {
-            props.navigation.navigate('Profile')
+            props.navigation.push('Profile')
         } 
     },[])
     return (

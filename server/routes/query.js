@@ -11,7 +11,8 @@ router.post('/'+apiVerison+'/addAddr', passport.authenticate('jwt', {session: fa
 router.post('/'+apiVerison+'/updateTable', passport.authenticate('jwt', {session: false}), controller.UpdateTable)
 
 router.get('/'+apiVerison+'/info', passport.authenticate('jwt', {session: false}), controller.getUserInfo)
-router.get('/'+apiVerison+'/getlist', passport.authenticate('jwt', {session: false}), controller.listTable)
+router.get('/'+apiVerison+'/getlist', passport.authenticate('jwt', {session: false}), controller.listAdressWithUser)
+router.get('/'+apiVerison+'/getAllList', passport.authenticate('jwt', {session: false}), controller.listAdressAll)
 
 
 module.exports = router

@@ -24,12 +24,36 @@ exports.getUserInfo = async(req, res) => {
         } catch (e) {
             return res.status(401).send('unauthorized');
         }
-        return res.status(200).json({fio: decoded.fio})
+        return res.status(200).json({fio: decoded.fio, id: decoded.sub})
     }
     return res.send(500);
 }
-//Вывод всех элементов из бд
-exports.listTable = async(req, res) => {
+//Вывод всех адрессов
+exports.listAdressAll = async(req, res) => {
+    if (req.headers && req.headers.authorization) {
+      let authorization = req.headers.authorization.split(' ')[1],
+          decoded;
+      try {
+          decoded = jwt.verify(authorization, 'kristik');
+      } catch (e) {
+          return res.status(401).send('unauthorized');
+      }
+      await House.aggregate([
+          {
+              $group: {
+                "_id": '$_id',
+                title: {'$last': "$addr"},
+                userId: {'$last':'$userId'}
+              }
+            }
+        ]).exec(async(err, result) => {
+              res.status(200).json(result.reverse())
+        })
+        
+    }
+}
+//Вывод элементов касаемо текущего пользователя
+exports.listAdressWithUser = async(req, res) => {
       if (req.headers && req.headers.authorization) {
         let authorization = req.headers.authorization.split(' ')[1],
             decoded;
@@ -44,12 +68,13 @@ exports.listTable = async(req, res) => {
                 $group: {
                   "_id": '$_id',
                   title: {'$last': "$addr"},
-                  v: {'$last':'$_v'}
+                  userId: {'$last':'$userId'}
                 }
               }
-          ]).exec((err, result) => {
-            res.status(200).json(result.reverse())
+          ]).exec(async(err, result) => {
+                res.status(200).json(result.reverse())
           })
+          
       }
 }
 //Удаление по айди
