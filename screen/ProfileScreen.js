@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react'
-import {View, SafeAreaView, Text, Button, TouchableOpacity, TextInput} from 'react-native'
+import React, {useState, useEffect, useRef, createRef} from 'react'
+import {View, SafeAreaView, Text, Button, TouchableOpacity, TextInput, CheckBox, Alert} from 'react-native'
 import styles from '../styles/styles'
 import Storage from '../Storage/storage'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -9,6 +9,7 @@ export default function ProfileScreen (props) {
     const [tableData, setTableData] = useState([
       ['a','b',''],['c','g','']
       ])
+      const [isSelected, setSelection] = useState(false);  
     useEffect(async() => {
       try {
         const Store = await Storage()  
@@ -33,7 +34,6 @@ export default function ProfileScreen (props) {
         response.some(data => {
           custArr.push(Object.values(data))
         })
-        console.log(custArr)
         setTableData(custArr)
       } catch (err) {
           console.error('Error:', err)
@@ -41,6 +41,7 @@ export default function ProfileScreen (props) {
     },[])
     const [value, onChangeText] = React.useState('');  
     const [state, onState] = React.useState({}) 
+
     const getText = (index, value) => {
 
         onChangeText(index, value)
@@ -48,13 +49,13 @@ export default function ProfileScreen (props) {
         console.log(index, value)
     }
 
-    const deleteElement = async(addr, index) => {
+    const deleteElement = async(id, index, all=false) => {
       const Store = await Storage()  
       const uri = 'http://localhost:3000/api/v1/'
       try {
           const request = await fetch(uri+'delAddr', {
               method: 'post', 
-              body: JSON.stringify({name: addr}),
+              body: JSON.stringify({id: id}),
               headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json',
@@ -63,32 +64,87 @@ export default function ProfileScreen (props) {
           })
           const result = await request.json()
           console.log(result)
+          if (!all) {
           let mass = [...tableData]
           mass.splice(index, 1)
           setTableData(mass)
+          } else setTableData([[]])
       } catch (err) {
           console.error('Error:', err)
       }
 
     }
+
+    const UpdateElement = async(id, name) => {
+      const Store = await Storage()  
+      const uri = 'http://localhost:3000/api/v1/'
+      try {
+          const request = await fetch(uri+'updateTable', {
+              method: 'post', 
+              body: JSON.stringify({id: id, name: name}),
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'authorization': 'bearer ' + JSON.parse(Store.token)
+                },
+          })
+          const result = await request.json()
+          
+      } catch (err) {
+          console.error('Error:', err)
+      }
+
+    }
+    const DeleteAll = async() => {
+      tableData.map((data, index) => {
+        deleteElement(data[0], index, true)
+      })
+      
+    }
+    const arrLength = tableData.length;
+    const [elRefs, setElRefs] = React.useState([]);
+    const [elCheckRefs, setelCheckref] = React.useState([])
+      React.useEffect(() => {
+        // add or remove refs
+        setElRefs(elRefs => (
+          Array(arrLength).fill().map((_, i) => elRefs[i] || createRef())
+        ));
+        setelCheckref(elCheckRefs => (
+          Array(arrLength).fill().map((_, i) => elCheckRefs[i] || createRef())
+        ));
+      }, [arrLength]);
+    const [btncap, setbtncap] = useState('Редактировать')
     const element = (data, index) => (
     <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => console.log(state)}>
+        <TouchableOpacity onPress={() => {
+          console.log(btncap)
+          if (btncap === 'Редактировать') {
+            elRefs[index].current.focus()
+            setbtncap('Ок')
+          }
+          if (btncap === 'Ок')
+          {
+            UpdateElement(tableData[index][0], state.data)
+            setbtncap('Редактировать')
+          }
+        }}>
           <View style={styles.btn}>
-            <Text style={styles.btnText}>Редактировать</Text>
+            <Text style={styles.btnText}>{btncap}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteElement(state.data,index)}>
+        <TouchableOpacity onPress={() => deleteElement(tableData[index][0],index)}>
           <View style={styles.btn}>
             <Text style={styles.btnText}>удалить</Text>
           </View>
         </TouchableOpacity>
     </View>
     );
-    
-    const edit = (data=' ', index) => (
+
+
+    const edit = (data=' ', index, editable=false, length) => (
         <TextInput
             value={value===''?data:value.data}
+            ref={elRefs[index]}
             onChangeText={(text) => getText(data, {data:text, key: index})}
         />
     )
@@ -109,7 +165,7 @@ export default function ProfileScreen (props) {
           const result = await request.json()
           let mass = [...tableData]
           const object = {
-            id: Math.round(Math.random(1000)*1000),
+            id: result.id,
             name: '0',
             v: 'null'
           }
@@ -121,10 +177,20 @@ export default function ProfileScreen (props) {
 
     }
     const logout = async() => {
+      await AsyncStorage.setItem('@auth', JSON.stringify(false))
+      
+      props.navigation.push('Home')
       //п
       //await AsyncStorage.setItem('@auth', JSON.stringify(false))
       //props.navigation.navigate('Home')
     }
+    const checkBoxCreator= (key, name) => <CheckBox
+    value={isSelected}
+    ref={elCheckRefs[key]}
+    onValueChange={setSelection}
+    style={{flexDirection: 'row'}}
+  />  
+    console.log(elCheckRefs)
     return (
        <SafeAreaView style={styles.container}> 
         <View style={[styles.containerHome,{position: 'absolute', top: 10, right: 20,justifyContent: 'space-between', alignItems: 'center',}]}>
@@ -137,10 +203,9 @@ export default function ProfileScreen (props) {
         <Table style={{flexDirection: 'row'}} borderStyle={{borderWidth: 1}}>
           {/* Left Wrapper */}
           <TableWrapper>
-            <Row data={['H1']} />
-            <Cell data="H1" />
-            <Cell data="H1" />
-            <Cell data="H1" />
+            <Row data={[checkBoxCreator()]} />
+            {tableData.map((rowData, index) => <Cell data={checkBoxCreator(index)}/>)}
+  
           </TableWrapper>
           
           <TableWrapper style={{flex:1}}>
@@ -162,8 +227,19 @@ export default function ProfileScreen (props) {
         />
         <View style={{marginTop: 20}}>
         <Button
-          title='Удалить' 
-          onPress={() => addColum()}
+          title='Удалить все' 
+          onPress={() => Alert.alert(
+            "Пароли не совпадают",
+            ""
+            [
+              {
+                text: "Отмена",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "OK", onPress: () => DeleteAll() }
+            ]
+          )()}
         />
         </View>
         </View>

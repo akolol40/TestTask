@@ -12,13 +12,16 @@ export default function App() {
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
+        options={{headerShown: false}}
         component={HomeScreen}
       />
       <Stack.Screen
+       options={{headerShown: false}}
         name="Autorization"
         component={AuthScreen}
       />
       <Stack.Screen
+       options={{headerShown: false}}
         name="Reg"
         component={RegScreen}
       />

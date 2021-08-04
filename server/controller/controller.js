@@ -61,12 +61,11 @@ exports.delAddr = async(req, res) => {
 }
 //Обновление адреса
 exports.UpdateTable = async(req, res) => {
-    const {name} = req.body
-    House.updateOne({name: name}).then(async(house) =>{
-        house.addr = name
-        await house.save()
-        res.status(200).json({status:"Ok" , message: 'update'})
-    })
+    const {id, name} = req.body
+    await House.findByIdAndUpdate({_id: id}, {addr: name}, {upsert: true}, function(err, doc) {
+        if (err) return res.status(500).json({err: err});
+        return res.status(200).json({status: 'ok'})
+    });
 }
 
 //добавление адреса
@@ -86,7 +85,7 @@ exports.addTableData = async(req, res) => {
                     userId: decoded.sub
                 })
                 await newAddr.save()
-                res.status(200).json({status:'ok'})
+                res.status(200).json({status:'ok',id: newAddr._id})
          
 
     }

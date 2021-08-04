@@ -5,11 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 export default function HomeScreen (props) {
     useEffect(async() => {
         let auth = await AsyncStorage.getItem('@auth')
-        if (auth) {
-        //    props.navigation.navigate('Profile')
-        } else {
-            console.log('logout')
-        }
+        console.log(auth)
+        if (auth==='true') {
+            props.navigation.navigate('Profile')
+        } 
     },[])
     return (
        <SafeAreaView style={styles.container}> 
