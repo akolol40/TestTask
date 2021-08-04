@@ -6,6 +6,9 @@ const Table = new Schema({
     addr: {
         type: String, 
     }, 
+    userId: {
+        type: String,
+    }
 },{versionKey: false})
 
 

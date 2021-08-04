@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const User = require('../model/User')
 const jwt = require('jsonwebtoken')
-const Table = require('../model/Table')
+const House = require('../model/House')
 const passport = require('passport')
 
 genToken = user => {
@@ -10,7 +10,7 @@ genToken = user => {
         sub: user._id,
         iat: new Date().getTime(),
         exp: new Date().setDate(new Date().getDate() + 1),
-        email: user.email,
+
         fio: user.fio
     }, 'kristik') 
 }
@@ -30,31 +30,41 @@ exports.getUserInfo = async(req, res) => {
 }
 //Вывод всех элементов из бд
 exports.listTable = async(req, res) => {
-    await Table.aggregate([
-        {
-          $group: {
-            "_id": '$_id',
-            title: {'$last': "$addr"},
-            v: {'$last':'$_v'}
-          }
+      if (req.headers && req.headers.authorization) {
+        let authorization = req.headers.authorization.split(' ')[1],
+            decoded;
+        try {
+            decoded = jwt.verify(authorization, 'kristik');
+        } catch (e) {
+            return res.status(401).send('unauthorized');
         }
-      ]).exec((err, result) => {
-        res.status(200).json(result.reverse())
-      })
+        await House.aggregate([
+            {$match: {userId: decoded.sub}},
+            {
+                $group: {
+                  "_id": '$_id',
+                  title: {'$last': "$addr"},
+                  v: {'$last':'$_v'}
+                }
+              }
+          ]).exec((err, result) => {
+            res.status(200).json(result.reverse())
+          })
+      }
 }
 //Удаление по айди
 exports.delAddr = async(req, res) => {
     const {id} = req.body 
-    await Table.deleteOne({_id: id}).then((tabl, status) => {
+    await House.deleteOne({_id: id}).then((tabl, status) => {
         res.status(200).json({status: tabl})
     })
 }
 //Обновление адреса
 exports.UpdateTable = async(req, res) => {
     const {name} = req.body
-    Table.updateOne({name: name}).then(async(table) =>{
-        table.addr = name
-        await table.save()
+    House.updateOne({name: name}).then(async(house) =>{
+        house.addr = name
+        await house.save()
         res.status(200).json({status:"Ok" , message: 'update'})
     })
 }
@@ -62,18 +72,29 @@ exports.UpdateTable = async(req, res) => {
 //добавление адреса
 exports.addTableData = async(req, res) => {
     const {addr} = req.body
-
-    await Table.findOne({addr: addr}).then(async (row) => {
-        if (row) {
-            res.status(404).json({status:"error" , message: 'Адрес уже существует'})
-        } else {
-            const newAddr = new Table({
-                addr: addr
-            })
-            await newAddr.save()
-            res.status(200).json({status:'ok'})
+    if (req.headers && req.headers.authorization) {
+        let authorization = req.headers.authorization.split(' ')[1],
+            decoded;
+        try {
+            decoded = jwt.verify(authorization, 'kristik');
+        } catch (e) {
+            return res.status(401).send('unauthorized');
         }
-    })
+        await House.findOne({addr: addr}).then(async (row) => {
+            if (row) {
+                res.status(404).json({status:"error" , message: 'Адрес уже существует'})
+            } else {
+                const newAddr = new House({
+                    addr: addr,
+                    userId: decoded.sub
+                })
+                await newAddr.save()
+                res.status(200).json({status:'ok'})
+            }
+        })
+    }
+    return res.send(500);
+
 }
 
 exports.regestration = async(req, res) => {

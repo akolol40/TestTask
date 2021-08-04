@@ -6,7 +6,7 @@ export default function HomeScreen (props) {
     useEffect(async() => {
         let auth = await AsyncStorage.getItem('@auth')
         if (auth) {
-            props.navigation.navigate('Profile')
+        //    props.navigation.navigate('Profile')
         } else {
             console.log('logout')
         }
