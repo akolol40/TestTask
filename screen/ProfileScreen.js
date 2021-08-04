@@ -51,13 +51,13 @@ export default function ProfileScreen (props) {
         console.log(index, value)
     }
 
-    const deleteElement = async(id, index, all=false) => {
+    const deleteElement = async(_id, index, all=false) => {
       const Store = await Storage()  
       const uri = 'http://localhost:3000/api/v1/'
       try {
           const request = await fetch(uri+'delAddr', {
               method: 'post', 
-              body: JSON.stringify({id: id}),
+              body: JSON.stringify({id: _id}),
               headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json',
@@ -70,7 +70,10 @@ export default function ProfileScreen (props) {
           let mass = [...tableData]
           mass.splice(index, 1)
           setTableData(mass)
-          } else setTableData([[]])
+          } else {
+            const AdressWithNoneDel = tableData.filter((item) => item[2] !== id)
+            setTableData(AdressWithNoneDel)
+          }
       } catch (err) {
           console.error('Error:', err)
       }
@@ -99,9 +102,11 @@ export default function ProfileScreen (props) {
     }
     const DeleteAll = async() => {
       tableData.map((data, index) => {
-        deleteElement(data[0], index, true)
+        if (data[2] === id){
+         deleteElement(data[0], index, true)
+        }
       })
-      
+  
     }
     const arrLength = tableData.length;
     const [elRefs, setElRefs] = React.useState([]);
