@@ -14,9 +14,9 @@ export default function HomeScreen (props) {
        <SafeAreaView style={styles.container}> 
         <View style={styles.containerHome}>
             <View style={{marginHorizontal: 20}}>
-            <Button onPress={() =>  props.navigation.navigate("Autorization")} title={"Вход"}/>
+            <Button onPress={() =>  props.navigation.push("Autorization")} title={"Вход"}/>
             </View>
-            <Button onPress={() => props.navigation.navigate('Reg')} title={'Регистрация'}/>
+            <Button onPress={() => props.navigation.push('Reg')} title={'Регистрация'}/>
         </View>
        </SafeAreaView> 
     )

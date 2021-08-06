@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {View, SafeAreaView, Button, Alert, ScrollView, KeyboardAvoidingView, Platform} from 'react-native'
 import styles from '../styles/styles'
 import Edit from '../components/Edit'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 const RegScreen = (props) =>  {
     const [email, setEmail] = useState('')
     const [pwd, setPwd] = useState('')
@@ -31,6 +31,12 @@ const RegScreen = (props) =>  {
                   },
             })
             const result = await request.json()
+            if (result.status === 'ok')
+            {
+                await AsyncStorage.setItem('@auth', JSON.stringify(true))
+                await AsyncStorage.setItem('@token', JSON.stringify(result.token))
+                props.navigation.push('Profile')
+            }
         } catch (err) {
             console.error('Error:', err)
         }

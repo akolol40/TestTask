@@ -49,7 +49,7 @@ const AuthScreen = (props) =>  {
                     <View style={{marginHorizontal: 30}}>
                         <Button onPress={() => Autorization(email, pwd)} title={"Войти"}/>
                     </View>
-                    <Button onPress={() => props.navigation.navigate('Home')} title={'Отмена'}/>
+                    <Button onPress={() => props.navigation.push('Home')} title={'Отмена'}/>
                 </View>
             </View>
         </SafeAreaView>
